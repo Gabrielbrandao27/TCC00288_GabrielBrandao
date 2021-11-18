@@ -1,5 +1,3 @@
---Opaaaa
-
 DO $$
 DECLARE
     _sql text;
