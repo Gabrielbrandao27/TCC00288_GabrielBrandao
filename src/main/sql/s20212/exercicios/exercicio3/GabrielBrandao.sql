@@ -7,8 +7,22 @@
  * Created: 18 de nov. de 2021
  */
 
-CREATE FUNCTION MultMatriz() RETURNS float AS $$
-    BEGIN 
+--
+-- Limpesa do BD
+-- Obs.: Executar antes o script create_drop_functions_and_tables.sql
+--
+DO $$ BEGIN
+    PERFORM drop_functions();
+    PERFORM drop_tables();
+END $$;
+
+
+CREATE FUNCTION MultMat(mat1 float, mat2 float, OUT produto float) RETURNS float AS $$
     
+    BEGIN 
+        produto := mat1 * mat2;
     END;
+    
 $$ LANGUAGE plpgsql;
+
+SELECT * FROM MultMat(2, 5);
