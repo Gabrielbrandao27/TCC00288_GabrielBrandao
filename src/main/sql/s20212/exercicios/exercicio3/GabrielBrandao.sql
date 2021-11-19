@@ -17,10 +17,11 @@ DO $$ BEGIN
 END $$;
 
 
-CREATE FUNCTION MultMat(mat1 float, mat2 float, OUT produto float) RETURNS float AS $$
+CREATE FUNCTION MultMat(mat1 float[][], mat2 float[][], OUT produto float) RETURNS float AS $$
     
     BEGIN 
-        produto := mat1 * mat2;
+        FOR i IN 1..n LOOP
+            
     END;
     
 $$ LANGUAGE plpgsql;
