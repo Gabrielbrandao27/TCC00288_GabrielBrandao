@@ -17,13 +17,16 @@ DO $$ BEGIN
 END $$;
 
 
-CREATE FUNCTION MultMat(mat1 float[][], mat2 float[][], OUT produto float) RETURNS float AS $$
+CREATE FUNCTION MultMat(mat1 float[][], mat2 float[][], OUT produto float) AS $$
     
+    DECLARE 
+        num integer := 30;
     BEGIN 
-        FOR i IN 1..n LOOP
-            
+        RAISE NOTICE 'Pia cria %', num;
+
+        RETURN num;
     END;
-    
+
 $$ LANGUAGE plpgsql;
 
-SELECT * FROM MultMat(2, 5);
+--SELECT * FROM MultMat(2, 5);
