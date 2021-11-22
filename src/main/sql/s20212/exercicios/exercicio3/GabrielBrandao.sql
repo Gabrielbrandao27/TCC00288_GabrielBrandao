@@ -16,19 +16,35 @@ DO $$ BEGIN
     PERFORM drop_tables();
 END $$;
 
-CREATE TABLE matriz1 (
-    mat1
-)
+CREATE TABLE matriz (
+    mat1 float[][],
+    mat2 float[][],
+    mat3 float[][]
+);
 
-CREATE FUNCTION MultMat(mat1 float[][], mat2 float[][], OUT produto float) AS $$
+insert into
+
+CREATE FUNCTION multmat(mat1 float[][], mat2 float[][], OUT float[][]) AS $$
     
-    DECLARE 
-        num integer := 30;
     BEGIN 
-        RAISE NOTICE 'Pia cria %', num;
+        for i in 1..array_length(mat1, 2) LOOP
+            for j in 1..array_length(mat1, 2) LOOP
+                for k in 1..aray_length(mat2, 1) LOOP
+                    for l in 1..array_length(mat2, 2) LOOP
+                        mat3[][]
 
+    EXCEPTION
+        WHEN array_length(mat1, 2) != array_length(mat2, 1) 
+        THEN 
+            RAISE NOTICE 'Imcompativeis';
+            RETURN 0;
     END;
 
 $$ LANGUAGE plpgsql;
 
 --SELECT * FROM MultMat(2, 5);
+
+DO $$ BEGIN    
+      raise notice 'Mensagem teste';
+      SELECT multmat();
+END $$;
