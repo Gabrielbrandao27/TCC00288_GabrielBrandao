@@ -16,6 +16,9 @@ DO $$ BEGIN
     PERFORM drop_tables();
 END $$;
 
+CREATE TABLE matriz1 (
+    mat1
+)
 
 CREATE FUNCTION MultMat(mat1 float[][], mat2 float[][], OUT produto float) AS $$
     
@@ -24,7 +27,6 @@ CREATE FUNCTION MultMat(mat1 float[][], mat2 float[][], OUT produto float) AS $$
     BEGIN 
         RAISE NOTICE 'Pia cria %', num;
 
-        RETURN num;
     END;
 
 $$ LANGUAGE plpgsql;
