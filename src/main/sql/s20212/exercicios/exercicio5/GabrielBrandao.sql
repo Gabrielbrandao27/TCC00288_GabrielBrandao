@@ -16,3 +16,21 @@ DO $$ BEGIN
     PERFORM drop_tables();
 END $$;
 
+-- Exercício diz pra supormos que a matriz Aij já está criada então também 
+-- supus que a  matriz original tamabém estava feita.
+
+CREATE OR REPLACE FUNCTION determinante() RETURNS float AS $$
+
+    DECLARE
+        det float := 0;
+
+    BEGIN
+        FOR i in 1..array_length(mat1, 1) LOOP
+            FOR j in 1..array_length(mat1, 2) LOOP
+                det = det + (mat1[i][j]*(-1)^(i+j)) * @A[i][j];
+
+    RETURN det;
+
+    END;
+
+$$ LANGUAGE plpgsql;
