@@ -16,26 +16,24 @@ DO $$ BEGIN
     PERFORM drop_tables();
 END $$;
 
-CREATE TABLE matriz (
-    mat1 float[][],
-    mat2 float[][]
-);
-
-INSERT INTO matriz VALUES ('{{1,2,3}, {4,5,6}, {7,8,9}}', '{{1, 2, 3}}');
-
 CREATE FUNCTION multmat(mat1 float[][], mat2 float[][]) RETURNS float[][] AS $$
     
     DECLARE 
         mat3 float[][];
+        linha float[];
+        elem float;
     BEGIN 
         for i in 1..array_length(mat1, 2) LOOP
             for j in 1..array_length(mat2, 2) LOOP
                 for k in 1..array_length(mat2, 1) LOOP
-                    mat3[][] = mat1[i][k] * mat2[k][j];
-                    RETURN mat3[][];
+                    elem = elem + mat1[i][k] * mat2[k][j];
                 END LOOP;
+                linha = array_append(linha, elem);
             END LOOP;
+            mat3 = array_cat(mat3, array[linha]);
         END LOOP;
+
+        RETURN mat3;
 
     EXCEPTION
         WHEN array_length(mat1, 2) != array_length(mat2, 1) 
@@ -45,8 +43,4 @@ CREATE FUNCTION multmat(mat1 float[][], mat2 float[][]) RETURNS float[][] AS $$
     END;
 
 $$ LANGUAGE plpgsql;
-
-DO $$ BEGIN
-    SELECT multmat(SELECT mat1 FROM matriz, SELECT mat2 FROM matriz);
-END $$;
 
