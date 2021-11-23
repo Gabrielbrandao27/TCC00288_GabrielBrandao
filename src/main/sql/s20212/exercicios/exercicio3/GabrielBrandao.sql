@@ -19,10 +19,15 @@ END $$;
 CREATE FUNCTION multmat(mat1 float[][], mat2 float[][]) RETURNS float[][] AS $$
     
     DECLARE 
-        mat3 float[][];
-        linha float[];
+        mat3 float[][] := '{}';
+        linha float[] := '{}';
         elem float;
     BEGIN 
+        if array_length(mat1, 2) != array_length(mat2, 1) 
+        THEN 
+            RAISE NOTICE 'Imcompativeis';
+            RETURN;
+
         for i in 1..array_length(mat1, 2) LOOP
             for j in 1..array_length(mat2, 2) LOOP
                 for k in 1..array_length(mat2, 1) LOOP
@@ -34,12 +39,6 @@ CREATE FUNCTION multmat(mat1 float[][], mat2 float[][]) RETURNS float[][] AS $$
         END LOOP;
 
         RETURN mat3;
-
-    EXCEPTION
-        WHEN array_length(mat1, 2) != array_length(mat2, 1) 
-        THEN 
-            RAISE NOTICE 'Imcompativeis';
-            RETURN;
     END;
 
 $$ LANGUAGE plpgsql;
