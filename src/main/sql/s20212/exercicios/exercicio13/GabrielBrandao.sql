@@ -7,10 +7,6 @@
  * Created: 23 de nov. de 2021
  */
 
---
--- Limpesa do BD
--- Obs.: Executar antes o script create_drop_functions_and_tables.sql
---
 drop table if exists campeonato cascade;
 drop table if exists jogo cascade;
 drop table if exists time_ cascade;
