@@ -144,8 +144,8 @@ CREATE OR REPLACE FUNCTION formata(pergunta_ int, respostas int[], totalResposta
             raise notice 'linha1 :%', linha1;
             linha2 = array_append(linha2, (respostas[i]::float)/(totalRespostas::float));
             raise notice 'linha2 :%', linha2;
-            respostaFinalAux = linha1 || linha2;
-            raise notice 'Resp :%', respostaFinalAux;--Consegui botar índice e o resultado porém não estou conseguindo intercalar as tuplas
+            respostaFinal = linha1 || linha2;
+            raise notice 'Resp :%', respostaFinal;--Consegui botar índice e o resultado porém não estou conseguindo intercalar as tuplas
         END LOOP;
         RETURN respostaFinal;
     END;
