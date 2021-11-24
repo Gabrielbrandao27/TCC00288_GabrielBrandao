@@ -142,8 +142,11 @@ CREATE OR REPLACE FUNCTION formata(pergunta_ int, respostas int[], totalResposta
     BEGIN
         FOR i IN 1.. totalRespostas LOOP
             linha1 = array_append(linha1, i);
+            raise notice 'linha1 :%', linha1;
             linha2 = array_append(linha2, (respostas[i]::float)/(totalRespostas::float));
-            respostaFinal := linha1 || linha2;
+            raise notice 'linha2 :%', linha2;
+            respostaFinal = linha1 || linha2;
+            raise notice 'Resp :%', respostaFinal;
         END LOOP;
         RETURN respostaFinal;
     END;
