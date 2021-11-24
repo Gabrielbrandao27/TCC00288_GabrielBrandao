@@ -138,15 +138,14 @@ CREATE OR REPLACE FUNCTION formata(pergunta_ int, respostas int[], totalResposta
         respostaFinal float[][];
         linha1 float[];
         linha2 float[];
-        elem float;
     BEGIN
         FOR i IN 1.. totalRespostas LOOP
             linha1 = array_append(linha1, i);
             raise notice 'linha1 :%', linha1;
             linha2 = array_append(linha2, (respostas[i]::float)/(totalRespostas::float));
             raise notice 'linha2 :%', linha2;
-            respostaFinal = linha1 || linha2;
-            raise notice 'Resp :%', respostaFinal;
+            respostaFinalAux = linha1 || linha2;
+            raise notice 'Resp :%', respostaFinalAux;
         END LOOP;
         RETURN respostaFinal;
     END;
@@ -167,10 +166,12 @@ RETURNS TABLE(pergunta_ int, histograma float[])AS $$
         FOR perguntaAtual IN perguntas LOOP
             SELECT COUNT(*) FROM resposta WHERE pesquisa = p_pesquisa AND pergunta = perguntaAtual.numero INTO qtdRespostas;
             SELECT array_fill(0, ARRAY[qtdRespostas]) INTO respsPerguntaAux;
+
             FOR escolhaAtual IN SELECT * FROM escolha WHERE pesquisa = p_pesquisa AND pergunta = perguntaAtual.numero LOOP
                 respsPerguntaAux[escolhaAtual.resposta] := respsPerguntaAux[escolhaAtual.resposta] + 1;
             END LOOP;
             RETURN QUERY SELECT perguntaAtual.numero, formata(perguntaAtual.numero, respsPerguntaAux, qtdRespostas);
+
         END LOOP;
         RETURN;
     END;
