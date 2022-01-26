@@ -1,1 +1,24 @@
+5) Uma técnica alternativa pode ser a de Rótulo de Tempo, ou Timestamp. Esta técnica adota um funcionamento basicamente de ordem de chegada. 
+Se uma operação A começa antes de B, ela será executada antes e B começará quando A terminar.
+Para implementar esta técnica, pode-se usar o relógio do sistema (clock) sendo este o timestamp. Ou usar um contador lógico que é incrementado 
+sempre que se usa um novo timestamp, isto é, o timestamp da transação é igual ao valor do contador no momento em que a transação entra no sistema.
 
+O algoritmo precisa garantir que a ordem em que o item está sendo acessado não está violando a ordem do rótulo de tempo
+e para isso o algoritmo associa a cada item X do banco de dados dois valores de rótulo de tempo(TS), sendo:
+
+-read_TS(X) - rótulo de tempo de leitura;
+-write_TS(X) - rótulo de tempo de gravação;
+
+Esses timestamps são atualizados sempre que uma nova instrução read_TS(X) ou write_TS(X) é executada. 
+Sempre que uma transação read e write é desfeita pelo esquema de controle de concorrência, esta transação recebe um novo timestamp e é reiniciada. 
+O rótulo de tempo (TO) compara o rótulo de tempo de T com read_TS(X) e write_TS(X) para garantir que o rótulo da transação de tempo não seja violada, 
+ou seja, o protocolo de ordenação de timestamp irá garantir que qualquer operação read ou write que esteja em conflito sejam executadas por ordem de timestamp.
+
+O protocolo de ordenação de timestamp pode prevenir o deadlock (ou impasse). Existem dois esquemas que impedem o deadlock, eles são chamados de:
+
+-Wait-die (esperar-morrer) - uma transação A que iniciou no instante 1 e uma transação B que iniciou no instante 2, logo, o timestamp de A B, então, a transação A será abortada (morre) e será reiniciada posteriormente com o mesmo rótulo de tempo.
+
+-Wound-wait (ferir-esperar) - uma transação A que iniciou no instante 1 e uma transação B que iniciou no instante 2, logo, o timestamp de A B, então, a transação A tem permissão para esperar.
+
+Em ambos os esquemas, a transação mais nova (que entrou depois) acaba sendo abortada pela transação que é mais velha (que entrou primeiro), 
+se elas estiverem envolvidas em um deadlock.
