@@ -1,12 +1,3 @@
-/* 
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Other/SQLTemplate.sql to edit this template
- */
-/**
- * Author:  bielf
- * Created: 24 de nov. de 2021
- */
-
 DO $$ BEGIN
     PERFORM drop_functions();
     PERFORM drop_tables();
@@ -131,52 +122,43 @@ insert into escolha values (5,1,1,2);
 insert into escolha values (5,1,2,1);
 insert into escolha values (5,1,3,1);
 
+create or replace function resultado(p_pesquisa int, p_bairros varchar[], p_cidades varchar[])
+returns table (pergunta int, histograma float[][]) as $$
+declare
+begin
+    return query
+    with
+        t1 as (select b.numero as bairro
+               from bairro b inner join cidade c on b.cidade = c.numero
+               where (p_bairros is null or array_position(p_bairros,b.nome) is not null)
+                      and (p_cidades is null or array_position(p_cidades,c.nome) is not null)),
 
-CREATE OR REPLACE FUNCTION formata(pergunta_ int, respostas int[], totalRespostas int) RETURNS float[][] AS $$
-    
-    DECLARE
-        respostaFinal float[][];
-        linha1 float[];
-        linha2 float[];
-        respostaFinalAux float[][];
-    BEGIN
-        FOR i IN 1.. totalRespostas LOOP
-            linha1 = array_append(linha1, i);
-            raise notice 'linha1 :%', linha1;
-            linha2 = array_append(linha2, (respostas[i]::float)/(totalRespostas::float));
-            raise notice 'linha2 :%', linha2;
-            respostaFinal = linha1 || linha2;
-            raise notice 'Resp :%', respostaFinal;--Consegui botar índice e o resultado porém não estou conseguindo intercalar as tuplas
-        END LOOP;
-        RETURN respostaFinal;
-    END;
-$$
-LANGUAGE PLPGSQL;
+        t2 as (select t22.pesquisa, t22.pergunta, t22.resposta, count(*) as frequencia
+               from
+                    (entrevista t21 natural join t1)
+                    inner join escolha t22 on t21.numero = t22.entrevista
+               where t22.pesquisa = p_pesquisa
+               group by t22.pesquisa, t22.pergunta, t22.resposta),
 
+        t3 as (select t33.pesquisa, t33.pergunta, t33.numero, 0::int as frequencia
+               from (entrevista t31 natural join t1)
+                    inner join escolha t32 on t32.entrevista = t31.numero
+                    right join resposta t33 on t33.pesquisa = t32.pesquisa and t33.pergunta = t32.pergunta and t33.numero = t32.resposta
+               where t33.pesquisa = p_pesquisa and t32.pesquisa is null),
 
-CREATE OR REPLACE FUNCTION resultado(p_pesquisa int, p_bairros varchar[], p_cidades varchar[])
-RETURNS TABLE(pergunta_ int, histograma float[])AS $$
-    DECLARE
-        cidades CURSOR FOR SELECT * FROM cidade WHERE numero = ANY(p_cidades);
-        bairros CURSOR FOR SELECT * FROM bairro WHERE numero = ANY(p_bairros);
-        perguntas CURSOR FOR SELECT * FROM pergunta WHERE pesquisa = p_pesquisa;
-        qtdRespostas int default 0;
-        respsPerguntaAux int[];
-        escolhaAtual RECORD;
-    BEGIN
-        FOR perguntaAtual IN perguntas LOOP
-            SELECT COUNT(*) FROM resposta WHERE pesquisa = p_pesquisa AND pergunta = perguntaAtual.numero INTO qtdRespostas;
-            SELECT array_fill(0, ARRAY[qtdRespostas]) INTO respsPerguntaAux;
+        t4 as (select * from t2 union select * from t3),
 
-            FOR escolhaAtual IN SELECT * FROM escolha WHERE pesquisa = p_pesquisa AND pergunta = perguntaAtual.numero LOOP
-                respsPerguntaAux[escolhaAtual.resposta] := respsPerguntaAux[escolhaAtual.resposta] + 1;
-            END LOOP;
-            RETURN QUERY SELECT perguntaAtual.numero, formata(perguntaAtual.numero, respsPerguntaAux, qtdRespostas);
+        t5 as (select t4.pesquisa, t4.pergunta, sum(frequencia) as total
+               from t4
+               group by t4.pesquisa, t4.pergunta)
 
-        END LOOP;
-        RETURN;
-    END;
-$$
-LANGUAGE PLPGSQL;
+    -- https://www.postgresql.org/docs/13/sql-expressions.html
+    select t4.pergunta, array_agg(array[t4.resposta,(coalesce(t4.frequencia*1.0/nullif(t5.total,0),0))::float] order by t4.resposta) as histograma
+    from t4 natural join t5
+    group by t4.pesquisa, t4.pergunta;
 
-SELECT * FROM resultado(1, ARRAY[ 'Tijuca', 'Centro', 'Lagoa', 'Icaraí', 'São Domingos', 'Santa Rosa', 'Moema', 'Jardim Paulista', 'Higienópolis'] ,ARRAY[ 'Rio de Janeiro', 'Niteroi', 'Sao Paulo']);
+end;
+$$ language plpgsql;
+
+select * from resultado(1,null,null);
+
