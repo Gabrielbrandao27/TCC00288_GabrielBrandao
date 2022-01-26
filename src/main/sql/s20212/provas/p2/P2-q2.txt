@@ -1,0 +1,5 @@
+2) As propriedades consistem em:
+- Atomicidade: ou a transação será executada em sua totalidade ou não será executada;
+- Consistência: a transação preserva consistência se a execução completa fizer o banco de dados passar de um estado para outro;
+- Isolamento: transação executa como se estivesse isolada das demais;
+- Durabilidade: mudanças feitas ao banco de dados por uma transação efetivada não podem ser perdidas.
