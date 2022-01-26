@@ -138,14 +138,18 @@ CREATE OR REPLACE FUNCTION formata(pergunta_ int, respostas int[], totalResposta
         respostaFinal float[][];
         linha1 float[];
         linha2 float[];
+        respostaFinalAux float[][];
     BEGIN
         FOR i IN 1.. totalRespostas LOOP
-            linha1 = array_append(linha1, i);
-            raise notice 'linha1 :%', linha1;
-            linha2 = array_append(linha2, (respostas[i]::float)/(totalRespostas::float));
-            raise notice 'linha2 :%', linha2;
-            respostaFinalAux = linha1 || linha2;
-            raise notice 'Resp :%', respostaFinalAux;--Consegui botar índice e o resultado porém não estou conseguindo intercalar as tuplas
+            For j in 1.. totalRespostas LOOP
+                linha1 = array_append(linha1, i);
+                raise notice 'linha1 :%', linha1;
+                linha2 = array_append(linha2, (respostas[i]::float)/(totalRespostas::float));
+                raise notice 'linha2 :%', linha2;
+                respostaFinalAux = linha1 || linha2;
+                raise notice 'Resp :%', respostaFinalAux;--Consegui botar índice e o resultado porém não estou conseguindo intercalar as tuplas
+                respostaFinal[i][j] = array_cat(respostaFinal, ARRAY[respostaFinalAux]);
+            END LOOP;
         END LOOP;
         RETURN respostaFinal;
     END;
