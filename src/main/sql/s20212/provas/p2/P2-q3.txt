@@ -1,1 +1,3 @@
-3) 
+3) Representa a ordem cronológica em que as instruções T1… Tn (read/write/commit/abort) de uma transação são executadas. 
+Devem preservar a ordem em que as instruções aparecem em cada transação individual.  
+O Schedule S de n transações T1, T2, … Tn ordena de forma que as operações de Ti em S sejam as mesmas que em Ti.
